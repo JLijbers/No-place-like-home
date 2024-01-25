@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+from tqdm import tqdm
 
 # Disable DecompressionBombWarning
 Image.MAX_IMAGE_PIXELS = None
@@ -18,7 +19,7 @@ def slice_image(input_path, output_folder, slice_size):
             os.makedirs(output_folder)
 
         # Generate slices
-        for x in range(x_slices):
+        for x in tqdm(range(x_slices), desc="Processing columns"):
             for y in range(y_slices):
                 left = x * slice_size
                 upper = y * slice_size
