@@ -17,17 +17,25 @@ def slice_image(input_path, output_folder, slice_size):
         img_width, img_height = img.size
 
         # Calculate the number of slices in each dimension
-        x_slices = img_width // slice_size
-        y_slices = img_height // slice_size
+        x_slices = img_width // slice_size if img_width % slice_size == 0 else img_width // slice_size + 1
+        y_slices = img_height // slice_size if img_height % slice_size == 0 else img_height // slice_size + 1
 
         # Create the output directory if it doesn't exist
         os.makedirs(output_folder, exist_ok=True)
 
         # Generate slices
-        for x in tqdm(range(x_slices), desc="Processing columns"):
+        for x in tqdm(range(x_slices), desc=f"Slicing {os.path.basename(input_path)}", leave=False):
             for y in range(y_slices):
-                left = x * slice_size
-                upper = y * slice_size
+                if x == x_slices - 1 and img_width % slice_size != 0:  # Last column slice
+                    left = img_width - slice_size
+                else:
+                    left = x * slice_size
+
+                if y == y_slices - 1 and img_height % slice_size != 0:  # Last row slice
+                    upper = img_height - slice_size
+                else:
+                    upper = y * slice_size
+
                 right = left + slice_size
                 lower = upper + slice_size
 
@@ -47,7 +55,11 @@ parser.add_argument("slice_size", type=int, help="Size of each slice (in pixels)
 # Parse the arguments
 args = parser.parse_args()
 
-# Process each TIFF file
+# Process each TIFF file with an outer tqdm progress bar
 tiff_files = glob.glob(f'{args.input_folder}/*.tif') + glob.glob(f'{args.input_folder}/*.tiff')
-for tiff_file in tiff_files:
-    slice_image(tiff_file, args.output_folder, args.slice_size)
+
+with tqdm(total=len(tiff_files), desc="Processing files") as pbar:
+    for tiff_file in tiff_files:
+        slice_image(tiff_file, args.output_folder, args.slice_size)
+        pbar.update(1)
+
