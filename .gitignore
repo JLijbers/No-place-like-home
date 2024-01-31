@@ -1,3 +1,5 @@
 .idea/
 data/
-*.docx
+blogpost/
+result_images/
+*.index
