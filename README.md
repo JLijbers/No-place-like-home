@@ -42,4 +42,3 @@ The project successfully demonstrates the potential of AI in image analysis for 
 ---
 
 *This project is a personal journey in AI and image analysis, showcasing the capabilities of DINOv2 and FAISS in a unique and innovative application.*
-
